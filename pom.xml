@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.gisbis</groupId>
+	<artifactId>trackrenderer</artifactId>
+	<version>1.0</version>
+	<packaging>war</packaging>
+	<properties>
+		<final.name>trackrenderer</final.name>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<failOnMissingWebXml>false</failOnMissingWebXml>
+		<tomee.version>8.0.8</tomee.version>
+		<geotools.version>26.0</geotools.version>
+	</properties>
+	<repositories>
+		<repository>
+			<id>osgeo</id>
+			<name>OSGeo Release Repository</name>
+			<url>https://repo.osgeo.org/repository/release/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+		<repository>
+			<id>osgeo-snapshot</id>
+			<name>OSGeo Snapshot Repository</name>
+			<url>https://repo.osgeo.org/repository/snapshot/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</repository>
+	</repositories>
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.tomee</groupId>
+			<artifactId>openejb-jee</artifactId>
+			<version>${tomee.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.tomee</groupId>
+		    <artifactId>openejb-server</artifactId>
+		    <version>${tomee.version}</version>
+		    <scope>provided</scope>
+		</dependency>
+		<dependency> 
+			<groupId>org.apache.tomcat</groupId> 
+			<artifactId>tomcat-catalina</artifactId> 
+			<version>9.0.43</version> 
+			<scope>provided</scope> 
+		</dependency>
+		
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.10</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-text</artifactId>
+			<version>1.9</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.12.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>42.3.1</version>
+			<scope>provided</scope>
+		</dependency>		
+		<dependency>
+			<groupId>com.microsoft.sqlserver</groupId>
+			<artifactId>mssql-jdbc</artifactId>
+			<version>9.4.0.jre8</version>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>8.0.27</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-geotiff</artifactId>
+			<version>${geotools.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.glassfish.jaxb</groupId>
+					<artifactId>jaxb-runtime</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.xml.bind</groupId>
+					<artifactId>jaxb-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.core</groupId>
+					<artifactId>jackson-core</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-swing</artifactId>
+			<version>${geotools.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-epsg-hsql</artifactId>
+			<version>${geotools.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-epsg-extension</artifactId>
+			<version>${geotools.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-shapefile</artifactId>
+			<version>${geotools.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools.xsd</groupId>
+			<artifactId>gt-xsd-wfs</artifactId>
+			<version>${geotools.version}</version>
+		</dependency>
+
+	</dependencies>
+	<build>
+		<finalName>${final.name}</finalName>
+		<defaultGoal>clean compile install tomee:run</defaultGoal>
+	</build>
+	<profiles>
+		<profile>
+			<id>tomee</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.tomee.maven</groupId>
+						<artifactId>tomee-maven-plugin</artifactId>
+						<version>${tomee.version}</version>
+						<executions>
+							<execution>
+								<id>executable-jar</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<context>ROOT</context>
+							<tomeeClassifier>plume</tomeeClassifier>
+							<tomeeHttpPort>8085</tomeeHttpPort>
+							<tomeeShutdownPort>8006</tomeeShutdownPort>
+							<tomeeAjpPort>8010</tomeeAjpPort>
+							<maxPostSize>0</maxPostSize>
+							<inlinedTomEEXml>
+								<tomee>
+									<Resource id="jdbc/gbdts" type="javax.sql.DataSource">
+										JdbcDriver = com.microsoft.sqlserver.jdbc.SQLServerDriver
+										JdbcUrl = jdbc:sqlserver://localhost:1433;databaseName=gis_techno;integratedSecurity=true;applicationName=trackrenderer
+										PoolMaxSize = 10000
+										MaxActive = 10000
+										MaxIdle = 1000
+										MaxWait = -1
+										ValidationQuery = select @@version
+										TestOnBorrow = true
+										jtaManaged = false
+									</Resource>
+									<!--
+									<Resource id="jdbc/gbdts" type="javax.sql.DataSource">JdbcDriver = org.postgresql.Driver 
+										JdbcUrl = jdbc:postgresql://localhost:5432/postgres?currentSchema=gis_techno 
+										UserName = postgres
+										PoolMaxSize = 10000 
+										MaxActive = 10000 
+										MaxIdle = 1000 
+										MaxWait = -1 
+										ValidationQuery = select 1
+										TestOnBorrow = true 
+										jtaManaged = false </Resource>
+									-->	
+								</tomee>
+							</inlinedTomEEXml>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>
