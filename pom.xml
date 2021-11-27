@@ -12,7 +12,10 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<failOnMissingWebXml>false</failOnMissingWebXml>
 		<tomee.version>8.0.8</tomee.version>
-		<geotools.version>26.0</geotools.version>
+		<geotools.version>26.1</geotools.version>
+		<postgresqldriver.version>42.3.1</postgresqldriver.version>
+		<mssqldriver.version>9.4.0.jre8</mssqldriver.version>
+		<mysqldriver.version>8.0.27</mysqldriver.version>
 	</properties>
 	<repositories>
 		<repository>
@@ -79,18 +82,20 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>42.3.1</version>
+			<version>${postgresqldriver.version}</version>
 			<scope>provided</scope>
 		</dependency>		
 		<dependency>
 			<groupId>com.microsoft.sqlserver</groupId>
 			<artifactId>mssql-jdbc</artifactId>
-			<version>9.4.0.jre8</version>
+			<version>${mssqldriver.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>8.0.27</version>
+			<version>${mysqldriver.version}</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
@@ -148,6 +153,20 @@
 			<version>${geotools.version}</version>
 		</dependency>
 
+
+
+
+		<dependency>
+		    <groupId>org.webjars</groupId>
+		    <artifactId>jquery</artifactId>
+		    <version>3.6.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.webjars</groupId>
+		    <artifactId>leaflet</artifactId>
+		    <version>1.7.1</version>
+		</dependency>
+		
 	</dependencies>
 	<build>
 		<finalName>${final.name}</finalName>
@@ -165,15 +184,6 @@
 						<groupId>org.apache.tomee.maven</groupId>
 						<artifactId>tomee-maven-plugin</artifactId>
 						<version>${tomee.version}</version>
-						<executions>
-							<execution>
-								<id>executable-jar</id>
-								<phase>package</phase>
-								<goals>
-									<goal>exec</goal>
-								</goals>
-							</execution>
-						</executions>
 						<configuration>
 							<context>ROOT</context>
 							<tomeeClassifier>plume</tomeeClassifier>
@@ -183,6 +193,19 @@
 							<maxPostSize>0</maxPostSize>
 							<inlinedTomEEXml>
 								<tomee>
+									<Resource id="jdbc/trackrenderer" type="javax.sql.DataSource">
+										JdbcDriver = com.mysql.cj.jdbc.Driver
+										JdbcUrl = jdbc:mysql://localhost/tracking
+										UserName = root
+										PoolMaxSize = 10000
+										MaxActive = 10000
+										MaxIdle = 1000
+										MaxWait = -1
+										ValidationQuery = select 1
+										TestOnBorrow = true
+										jtaManaged = false
+									</Resource>
+									<!--
 									<Resource id="jdbc/gbdts" type="javax.sql.DataSource">
 										JdbcDriver = com.microsoft.sqlserver.jdbc.SQLServerDriver
 										JdbcUrl = jdbc:sqlserver://localhost:1433;databaseName=gis_techno;integratedSecurity=true;applicationName=trackrenderer
@@ -194,6 +217,7 @@
 										TestOnBorrow = true
 										jtaManaged = false
 									</Resource>
+									-->
 									<!--
 									<Resource id="jdbc/gbdts" type="javax.sql.DataSource">JdbcDriver = org.postgresql.Driver 
 										JdbcUrl = jdbc:postgresql://localhost:5432/postgres?currentSchema=gis_techno 
@@ -208,6 +232,11 @@
 									-->	
 								</tomee>
 							</inlinedTomEEXml>
+							<libs>
+								<lib>org.postgresql:postgresql:${postgresqldriver.version}</lib>
+								<lib>com.microsoft.sqlserver:mssql-jdbc:${mssqldriver.version}</lib>
+								<lib>mysql:mysql-connector-java:${mysqldriver.version}</lib>
+							</libs>
 						</configuration>
 					</plugin>
 				</plugins>
