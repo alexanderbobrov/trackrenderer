@@ -120,17 +120,32 @@ public class Renderer {
 			pt = new PointTime(pt.id, pt.timestamp, gf.createPoint(at.transform(pt.coordinate.getCentroid().getCoordinate())));
 			//System.out.println(pt);
 			if ( pt.id != pId ) {
-				if ( ppt != null && writeLabel )
-					drawPointTime(width, height, g2d, ppt);
+				if ( ppt != null ) { 
+					if ( writeLabel )
+						drawPointTime(width, height, g2d, ppt);
+					//draw finish point
+					Coordinate c = ppt.coordinate.getCentroid().getCoordinate();
+					if ( c.x > 0 && c.x < width && c.y > 0 && c.y < height ) {
+						g2d.setPaint(Color.gray);
+						g2d.fillOval((int)(c.x - 5), (int)(c.y - 5), 10, 10);
+					}
+				}
 				ppt = null;
 				pId = pt.id;
+				
+				// draw start point
+				Coordinate c = pt.coordinate.getCentroid().getCoordinate();
+				if ( c.x > 0 && c.x < width && c.y > 0 && c.y < height ) {
+					g2d.setPaint(Color.red);
+					g2d.fillOval((int)(c.x - 5), (int)(c.y - 5), 10, 10);
+				}
 			}
 			
 			Coordinate c = pt.coordinate.getCentroid().getCoordinate();
 			Coordinate pc = ppt != null ? ppt.coordinate.getCentroid().getCoordinate() : null;
 			
 			if ( c!= null && pc != null )
-				l = gf.createLineString(new Coordinate[] {c, pc});
+				l = gf.createLineString(new Coordinate[] {pc, c});
 			
 			if ( l != null && e.intersects(l.getEnvelopeInternal()) ) // ( ( c.x > 0 && c.x < width && c.y > 0 && c.y < height ) || ( pc.x > 0 && pc.x < width && pc.y > 0 && pc.y < height ) ) )
 				drawLine(g2d, l);
@@ -139,8 +154,16 @@ public class Renderer {
 				drawPointTime(width, height, g2d, ppt);
 			ppt = pt;
 		}
-		if ( ppt != null && writeLabel )
-			drawPointTime(width, height, g2d, ppt);
+		if ( ppt != null ) { 
+			if ( writeLabel )
+				drawPointTime(width, height, g2d, ppt);
+			//draw finish point
+			Coordinate c = ppt.coordinate.getCentroid().getCoordinate();
+			if ( c.x > 0 && c.x < width && c.y > 0 && c.y < height ) {
+				g2d.setPaint(Color.gray);
+				g2d.fillOval((int)(c.x - 5), (int)(c.y - 5), 10, 10);
+			}
+		}
 		//System.out.println("writeLabel = "+writeLabel);
 		
 		g2d.dispose();
