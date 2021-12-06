@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -98,12 +99,24 @@ public class MapService extends HttpServlet {
 			
 			List<Integer> trackIds = getIntegersParam("cf", request);
 			
+			Calendar c = Calendar.getInstance();
 			String viewparams = request.getParameter("viewparams"); // year:2019;month:2;day:8
-			Integer year = null; try { Matcher matcher = Pattern.compile("year\\:(\\d++)",Pattern.CASE_INSENSITIVE | Pattern.MULTILINE).matcher(viewparams); if ( matcher.find() ) year = Integer.parseInt(matcher.group(1)); } catch (Exception e) { } //try { year = Integer.parseInt(request.getParameter("year")); } catch (Exception e) { e.printStackTrace(); } 
-			Integer month = null; try { Matcher matcher = Pattern.compile("month\\:(\\d++)",Pattern.CASE_INSENSITIVE | Pattern.MULTILINE).matcher(viewparams); if ( matcher.find() ) month = Integer.parseInt(matcher.group(1)); } catch (Exception e) { } //try { month = Integer.parseInt(request.getParameter("month")); } catch (Exception e) { }
-			Integer day = null; try { Matcher matcher = Pattern.compile("day\\:(\\d++)",Pattern.CASE_INSENSITIVE | Pattern.MULTILINE).matcher(viewparams); if ( matcher.find() ) day = Integer.parseInt(matcher.group(1)); } catch (Exception e) { } //try { day = Integer.parseInt(request.getParameter("day")); } catch (Exception e) { }
+			Integer year = null; try { Matcher matcher = Pattern.compile("year\\:(\\d++)",Pattern.CASE_INSENSITIVE | Pattern.MULTILINE).matcher(viewparams); if ( matcher.find() ) year = Integer.parseInt(matcher.group(1)); } catch ( Exception e ) { year = c.get(Calendar.YEAR); } 
+			Integer month = null; try { Matcher matcher = Pattern.compile("month\\:(\\d++)",Pattern.CASE_INSENSITIVE | Pattern.MULTILINE).matcher(viewparams); if ( matcher.find() ) month = Integer.parseInt(matcher.group(1)); } catch (Exception e) { month = c.get(Calendar.MONTH)+1; }
+			Integer day = null; try { Matcher matcher = Pattern.compile("day\\:(\\d++)",Pattern.CASE_INSENSITIVE | Pattern.MULTILINE).matcher(viewparams); if ( matcher.find() ) day = Integer.parseInt(matcher.group(1)); } catch (Exception e) { day = c.get(Calendar.DAY_OF_MONTH); }
+			if ( logging ) log.info("year = "+year+" month = "+month+" day = "+day);
 			
-			image = renderer.render(width, height, e4326, year, month, day, trackIds);
+			Objects.requireNonNull(renderer, "Failed get renderer object");			
+			image = 
+				renderer.renderAllDay(
+					width, 
+					height, 
+					e4326, 
+					year, 
+					month, 
+					day, 
+					trackIds,
+					logging);
 		} catch ( Exception e ) {
 			e.printStackTrace();
 			

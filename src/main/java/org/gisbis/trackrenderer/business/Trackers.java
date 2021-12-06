@@ -48,18 +48,11 @@ public class Trackers {
 	
 	private static String sqlExtractTrackers =
 			"select \n"+
-			"	id, imei, phone, name \n"+
-			"from ( \n"+
-			"	select \n"+
-			"		sources.source_id as id, \n"+
-			"		sources.source_imei as imei, \n"+
-			"		sources.phone as phone, \n"+
-			"		objects.label as name, \n"+
-			"		row_number() over ( partition by objects.source_id ) rn \n"+
-			"	from google.sources \n"+
-			"	left join google.objects on objects.source_id = sources.source_id \n"+
-			") aaa \n"+
-			"where rn = 1";
+			"	sources.source_id as id, \n"+
+			"	sources.source_imei as imei, \n"+
+			"	sources.phone as phone, \n"+
+			"	(select objects.label as name from google.objects where objects.source_id = sources.source_id limit 1) as name \n"+
+			"from google.sources";
 	
 	private Map<Integer, Tracker> getTrackersListFromBase ( ) throws Exception {
 		HashMap<Integer, Tracker> result = new HashMap<Integer, Tracker>();
@@ -72,6 +65,7 @@ public class Trackers {
 							rs.getString("imei"), 
 							rs.getString("phone"), 
 							rs.getString("name"));
+				//log.info(""+tracker);
 				result.put(tracker.getId(), tracker);
 			}
 		} catch ( SQLException e ) {
