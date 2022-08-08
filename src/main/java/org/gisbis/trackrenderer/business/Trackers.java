@@ -31,10 +31,10 @@ public class Trackers {
 	private static Semaphore trackerSemaphore = new Semaphore(1);
 	
 	public Map<Integer, Tracker> getTrackersList ( ) throws Exception {
-		if ( trackersList == null || System.currentTimeMillis() - lastUpdateTime > 60000 ) { // Если 
+		if ( ( trackersList == null ) || ( System.currentTimeMillis() - lastUpdateTime > 60000 ) ) { // Если 
 			trackerSemaphore.acquire();
 			try {
-				if ( trackersList == null || System.currentTimeMillis() - lastUpdateTime > 60000 ) {
+				if ( ( trackersList == null ) || ( System.currentTimeMillis() - lastUpdateTime > 60000 ) ) {
 					trackersList = getTrackersListFromBase();
 					lastUpdateTime = System.currentTimeMillis();
 				}
@@ -61,10 +61,10 @@ public class Trackers {
 			while ( rs.next() ) {
 				Tracker tracker =				
 					new Tracker(
-							rs.getInt("id"), 
-							rs.getString("imei"), 
-							rs.getString("phone"), 
-							rs.getString("name"));
+						rs.getInt("id"), 
+						rs.getString("imei"), 
+						rs.getString("phone"), 
+						rs.getString("name"));
 				//log.info(""+tracker);
 				result.put(tracker.getId(), tracker);
 			}
